@@ -94,7 +94,6 @@ This service provider registers with DCM using the following metadata:
 
 - **Name:** `acm-cluster-sp`
 - **ServiceType:** `cluster`
-- **ServiceTypeVersion:** `1.0.0`
 - **Operations:** `CREATE`, `DELETE`, `READ`
 
 ## License

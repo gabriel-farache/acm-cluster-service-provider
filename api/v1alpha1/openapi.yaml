@@ -10,7 +10,6 @@ info:
     ## DCM Registration Metadata
     - **Name:** acm-cluster-sp
     - **ServiceType:** cluster
-    - **ServiceTypeVersion:** 1.0.0
     - **SupportedPlatforms:** kubevirt, baremetal
     - **SupportedVersions:** Dynamic (based on ClusterImageSets available on ACM Hub)
     - **Operations:** CREATE, DELETE, READ
@@ -76,6 +75,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported platform or version
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '500':
           description: Internal server error
           content:
@@ -105,14 +110,14 @@ paths:
             format: int32
             minimum: 1
             maximum: 100
-            default: 20
+            default: 50
       responses:
         '200':
           description: List of clusters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClusterListResponse'
+                $ref: '#/components/schemas/ClusterList'
         '400':
           description: Invalid request
           content:
@@ -251,6 +256,13 @@ components:
           type: string
           description: OpenShift console URI (available when READY)
           readOnly: true
+        kubeconfig:
+          type: string
+          description: >-
+            Base64-encoded kubeconfig for cluster access. Populated when
+            cluster status is READY. Empty during PENDING, PROVISIONING,
+            or FAILED states.
+          readOnly: true
         create_time:
           type: string
           format: date-time
@@ -381,9 +393,9 @@ components:
         - PROVISIONING
         - READY
         - FAILED
-        - DELETING
+        - DELETED
 
-    ClusterListResponse:
+    ClusterList:
       type: object
       description: Paginated list of clusters
       properties:
@@ -470,6 +482,7 @@ components:
             - UNAUTHENTICATED
             - INTERNAL
             - UNAVAILABLE
+            - UNPROCESSABLE_ENTITY
         title:
           type: string
           description: Short, human-readable summary of the problem

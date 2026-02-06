@@ -466,7 +466,7 @@ type ClientWithResponsesInterface interface {
 type ListClustersResponse struct {
 	Body                      []byte
 	HTTPResponse              *http.Response
-	JSON200                   *ClusterListResponse
+	JSON200                   *ClusterList
 	ApplicationproblemJSON400 *Error
 	ApplicationproblemJSON500 *Error
 }
@@ -493,6 +493,7 @@ type CreateClusterResponse struct {
 	JSON201                   *ClusterInstance
 	ApplicationproblemJSON400 *Error
 	ApplicationproblemJSON409 *Error
+	ApplicationproblemJSON422 *Error
 	ApplicationproblemJSON500 *Error
 }
 
@@ -649,7 +650,7 @@ func ParseListClustersResponse(rsp *http.Response) (*ListClustersResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ClusterListResponse
+		var dest ClusterList
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -708,6 +709,13 @@ func ParseCreateClusterResponse(rsp *http.Response) (*CreateClusterResponse, err
 			return nil, err
 		}
 		response.ApplicationproblemJSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSON422 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error

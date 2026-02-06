@@ -15,7 +15,7 @@ const (
 
 // Defines values for ClusterStatus.
 const (
-	DELETING     ClusterStatus = "DELETING"
+	DELETED      ClusterStatus = "DELETED"
 	FAILED       ClusterStatus = "FAILED"
 	PENDING      ClusterStatus = "PENDING"
 	PROVISIONING ClusterStatus = "PROVISIONING"
@@ -24,13 +24,14 @@ const (
 
 // Defines values for ErrorType.
 const (
-	ALREADYEXISTS    ErrorType = "ALREADY_EXISTS"
-	INTERNAL         ErrorType = "INTERNAL"
-	INVALIDARGUMENT  ErrorType = "INVALID_ARGUMENT"
-	NOTFOUND         ErrorType = "NOT_FOUND"
-	PERMISSIONDENIED ErrorType = "PERMISSION_DENIED"
-	UNAUTHENTICATED  ErrorType = "UNAUTHENTICATED"
-	UNAVAILABLE      ErrorType = "UNAVAILABLE"
+	ALREADYEXISTS       ErrorType = "ALREADY_EXISTS"
+	INTERNAL            ErrorType = "INTERNAL"
+	INVALIDARGUMENT     ErrorType = "INVALID_ARGUMENT"
+	NOTFOUND            ErrorType = "NOT_FOUND"
+	PERMISSIONDENIED    ErrorType = "PERMISSION_DENIED"
+	UNAUTHENTICATED     ErrorType = "UNAUTHENTICATED"
+	UNAVAILABLE         ErrorType = "UNAVAILABLE"
+	UNPROCESSABLEENTITY ErrorType = "UNPROCESSABLE_ENTITY"
 )
 
 // Defines values for HealthStatus.
@@ -77,6 +78,9 @@ type ClusterInstance struct {
 	// CreateTime Timestamp when the cluster was created
 	CreateTime *time.Time `json:"create_time,omitempty"`
 
+	// Kubeconfig Base64-encoded kubeconfig for cluster access. Populated when cluster status is READY. Empty during PENDING, PROVISIONING, or FAILED states.
+	Kubeconfig *string `json:"kubeconfig,omitempty"`
+
 	// Metadata Optional metadata for the cluster
 	Metadata *ClusterMetadata `json:"metadata,omitempty"`
 
@@ -102,8 +106,8 @@ type ClusterInstance struct {
 	Version string `json:"version"`
 }
 
-// ClusterListResponse Paginated list of clusters
-type ClusterListResponse struct {
+// ClusterList Paginated list of clusters
+type ClusterList struct {
 	// NextPageToken Token to fetch the next page of results
 	NextPageToken *string `json:"next_page_token,omitempty"`
 
